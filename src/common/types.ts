@@ -32,3 +32,5 @@ export interface Order {
 export interface CheckoutResponse {
     id: number;
 }
+
+// @ts-ignore
