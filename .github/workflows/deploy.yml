@@ -34,7 +34,7 @@ jobs:
 
       - name: Add comment to issue
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
