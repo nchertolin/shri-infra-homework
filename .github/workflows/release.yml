@@ -62,6 +62,11 @@ jobs:
           docker push cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}
           docker push cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "nchertolin@gmail.com"
+          git config --global user.name "nchertolin"
+
       - name: Create GitHub release tag
         run: |
           git tag -a v${{ env.RELEASE_VERSION }} -m "release ${{ env.RELEASE_VERSION }}"

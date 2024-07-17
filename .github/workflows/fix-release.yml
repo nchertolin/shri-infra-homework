@@ -64,6 +64,11 @@ jobs:
           docker push cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
           docker push cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "nchertolin@gmail.com"
+          git config --global user.name "nchertolin"
+
       - name: Create fix tag
         run: |
           git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env.RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
