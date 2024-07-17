@@ -30,7 +30,7 @@ jobs:
 
       - name: Get current running container image
         id: current_image
-        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "docker ps --filter 'name=app' --format '{{.Image}}'"
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "sudo docker ps --filter 'name=app' --format '{{.Image}}'"
 
       - name: Deploy to production server
         run:
