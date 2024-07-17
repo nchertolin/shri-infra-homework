@@ -54,15 +54,15 @@ jobs:
         run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
 
       - name: Build Docker image
-        run: docker build --platform=linux/amd64 -t cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} .
+        run: docker build --platform=linux/amd64 -t cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} .
 
       - name: Tag Docker image with latest
-        run: docker tag cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_latest
+        run: docker tag cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Push Docker image
         run: |
-          docker push cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
-          docker push cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_latest
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Create fix tag
         run: |
@@ -83,4 +83,4 @@ jobs:
       - name: Add comment to issue
         run: |
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
-          gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has been created.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/$CR_ID/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}"
+          gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has been created.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}"
