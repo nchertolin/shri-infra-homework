@@ -30,7 +30,8 @@ jobs:
 
       - name: Deploy to production server
         run:
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "docker run -d --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "sudo docker run
+          -d --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
 
       - name: Add comment to issue
         env:
