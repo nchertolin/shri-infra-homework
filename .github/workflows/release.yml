@@ -37,23 +37,30 @@ jobs:
 
       - name: Get release version
         id: get_version
-        run: echo "RELEASE_VERSION=${{ github.run_number }}" >> $GITHUB_ENV
+        run: |
+          VERSION_MAJOR=1
+          VERSION_MINOR=0
+          VERSION_PATCH=${{ github.run_number }}
+          echo "RELEASE_VERSION=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" >> $GITHUB_ENV
 
       - name: Create release branch
         run: |
           git checkout -b releases/${{ env.RELEASE_VERSION }}
           git push origin releases/${{ env.RELEASE_VERSION }}
 
+      - name: Log in to Container Registry
+        run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
+
       - name: Build Docker image
-        run: docker build --platform=linux/amd64 -t cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }} .
+        run: docker build --platform=linux/amd64 -t cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }} .
 
       - name: Tag Docker image with latest
-        run: docker tag cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }} cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
+        run: docker tag cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }} cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Push Docker image
         run: |
-          docker push cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}
-          docker push cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Create GitHub release tag
         run: |
@@ -73,4 +80,4 @@ jobs:
 
       - name: Create release issue
         run: |
-          gh issue create --title "Release ${{ env.RELEASE_VERSION }}" --body "Date: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nVersion: ${{ env.RELEASE_VERSION }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}"
+          gh issue create --title "Release ${{ env.RELEASE_VERSION }}" --body "Date: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nVersion: ${{ env.RELEASE_VERSION }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}"

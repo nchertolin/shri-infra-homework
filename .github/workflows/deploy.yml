@@ -21,12 +21,16 @@ jobs:
       - name: Add host to known_hosts
         run: ssh-keyscan -H ${{ env.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      - name: Log in to Container Registry
+        run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
+
       - name: Check Docker image
-        run: |
-          docker pull cr.yandex/${{ secrets.CR_ID }}/app:${{ github.event.inputs.version }}_latest
+        run:
+          docker pull cr.yandex/${{ env.CR_ID }}/app:${{ github.event.inputs.version }}_latest
 
       - name: Deploy to production server
-        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ env.SERVER_IP }} "docker run -d --name app -p 3000:3000 cr.yandex/${{ secrets.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
+        run:
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ env.SERVER_IP }} "docker run -d --name app -p 3000:3000 cr.yandex/${{ env.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
 
       - name: Add comment to issue
         run: |

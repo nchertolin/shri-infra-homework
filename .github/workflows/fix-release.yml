@@ -50,20 +50,22 @@ jobs:
       - name: Checkout release branch
         run: git checkout releases/${{ env.RELEASE_VERSION }}
 
+      - name: Log in to Container Registry
+        run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
+
       - name: Build Docker image
-        run: docker build --platform=linux/amd64 -t cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} .
+        run: docker build --platform=linux/amd64 -t cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} .
 
       - name: Tag Docker image with latest
-        run: docker tag cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
+        run: docker tag cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Push Docker image
         run: |
-          docker push cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
-          docker push cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
+          docker push cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_latest
 
       - name: Create fix tag
         run: |
-          
           git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env.RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
           git push origin v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
 
@@ -81,4 +83,4 @@ jobs:
       - name: Add comment to issue
         run: |
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
-          gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has been created.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ secrets.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}"
+          gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has been created.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ env.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}"
