@@ -88,4 +88,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
-          gh issue create --title "Release ${{ env.RELEASE_VERSION }}" --body $`Date: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nVersion: ${{ env.RELEASE_VERSION }}\nCommits:\n${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}`
+          gh issue create --title "Release ${{ env.RELEASE_VERSION }}" --body "Date: ${{ github.event.created_at }}$'\n'Author: ${{ github.actor }}$'\n'Version: ${{ env.RELEASE_VERSION }}$'\n'Commits: ${{ env.COMMITS }}$'\n'Docker Image: cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}"
