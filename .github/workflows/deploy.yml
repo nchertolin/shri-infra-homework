@@ -28,10 +28,6 @@ jobs:
         run:
           docker pull cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest
 
-      - name: Get current running container image
-        id: current_image
-        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "sudo docker ps --filter 'name=app' --format '{{.Image}}'"
-
       - name: Deploy to production server
         run:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "
@@ -40,10 +36,7 @@ jobs:
           sudo docker run -d --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
 
       - name: Remove old Docker image
-        if: steps.current_image.outputs.image != ''
-        run: |
-          OLD_IMAGE=${{ steps.current_image.outputs.image }}
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "docker rmi $OLD_IMAGE -f"
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "sudo docker image prune -af"
 
       - name: Add comment to issue
         env:
