@@ -86,6 +86,9 @@ jobs:
           echo "COMMITS=$COMMITS" >> $GITHUB_ENV
 
       - name: Add comment to issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has been created.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}"

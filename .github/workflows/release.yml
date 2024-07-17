@@ -84,5 +84,8 @@ jobs:
           echo "COMMITS=$COMMITS" >> $GITHUB_ENV
 
       - name: Create release issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
           gh issue create --title "Release ${{ env.RELEASE_VERSION }}" --body "Date: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}\nVersion: ${{ env.RELEASE_VERSION }}\nCommits: ${{ env.COMMITS }}\nDocker Image: cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}"

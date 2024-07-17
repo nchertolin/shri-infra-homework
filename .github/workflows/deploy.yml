@@ -33,6 +33,9 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "docker run -d --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
 
       - name: Add comment to issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Release ${{ github.event.inputs.version }} has been deployed to production.\n\nDate: ${{ github.event.created_at }}\nAuthor: ${{ github.actor }}"
