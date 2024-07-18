@@ -48,7 +48,8 @@ jobs:
         run: echo "FIX_VERSION=${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Checkout release branch
-        run: git checkout releases/${{ env.RELEASE_VERSION }}
+        run: |
+          git checkout releases/${{ env.RELEASE_VERSION }}
 
       - name: Log in to Container Registry
         run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
@@ -77,6 +78,7 @@ jobs:
         run: |
           git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env.RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
           git push origin v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
+          git branch --set-upstream-to origin/v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
 
       - name: Get commit list
         id: get_commit_list
