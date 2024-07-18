@@ -49,7 +49,7 @@ jobs:
 
       - name: Checkout release branch
         run: |
-          git checkout releases/${{ env.RELEASE_VERSION }}
+          git checkout -b releases/${{ env.RELEASE_VERSION }}
 
       - name: Log in to Container Registry
         run: echo "${{ secrets.OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
@@ -78,24 +78,21 @@ jobs:
         run: |
           git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env.RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
           git push origin v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
-          git branch --set-upstream-to origin/v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
 
       - name: Get commit list
         id: get_commit_list
         run: |
-          git pull --tags
           PREV_TAG=${{ steps.get_prev_tag.outputs.PREV_TAG }}
-          COMMITS=$(git log $PREV_TAG..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")
-          echo "COMMITS=$COMMITS" >> $GITHUB_ENV
+          echo "COMMITS=$(git log $PREV_TAG..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >> $GITHUB_ENV
 
       - name: Add comment to issue
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
+          COMMITS=${{ steps.get_commit_list.outputs.COMMITS }}
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has
           been created.<br><br>**Date:** ${{ github.event.created_at }}<br>**Author:** ${{ github.actor 
-          }}<br>**Commits:**<br>${{ env.COMMITS}}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
+          }}<br>**Commits:**<br>$COMMITS<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
           .RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
       
