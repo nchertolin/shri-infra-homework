@@ -81,7 +81,7 @@ jobs:
         run: |
           git pull --tags
           PREV_TAG=${{ steps.get_prev_tag.outputs.PREV_TAG }}
-          COMMITS=$(git log $PREV_TAG v${{ env.RELEASE_VERSION }} --oneline --pretty=format:"* %s (%h)" | sed ':a;N;$!ba;s/\n/<br>/g')
+          COMMITS=$(git log $PREV_TAG..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")
           echo "COMMITS=$COMMITS" >> $GITHUB_ENV
 
       - name: Create release issue
