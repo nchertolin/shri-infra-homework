@@ -41,7 +41,6 @@ jobs:
       - name: Add comment to issue
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
           ISSUE_NUMBER=$(gh issue list --search ${{ github.event.inputs.version }} --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Release v${{ github.event.inputs.version }} has been deployed to production.<br><br>**Date:** ${{ github.event.created_at }}<br>**Author:** ${{ github.actor }}"

@@ -67,20 +67,21 @@ jobs:
           git config --global user.email "nchertolin@gmail.com"
           git config --global user.name "nchertolin"
 
+      - name: Get previous release tag
+        id: get_prev_tag
+        run: echo "PREV_TAG=$( git ls-remote --tags origin | tail -2 | head -1 | sed 's/.*\///')" >> $GITHUB_ENV
+
       - name: Create GitHub release tag
         run: |
           git tag -a v${{ env.RELEASE_VERSION }} -m "release ${{ env.RELEASE_VERSION }}"
           git push origin v${{ env.RELEASE_VERSION }}
 
-      - name: Get previous release tag
-        id: get_prev_tag
-        run: echo "PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)" >> $GITHUB_ENV
-
       - name: Get commit list
         id: get_commit_list
         run: |
+          git pull --tags
           PREV_TAG=${{ steps.get_prev_tag.outputs.PREV_TAG }}
-          COMMITS=$(git log $PREV_TAG..HEAD --oneline)
+          COMMITS=$(git log $PREV_TAG v${{ env.RELEASE_VERSION }} --oneline --pretty=format:"* %s (%h)" | sed ':a;N;$!ba;s/\n/<br>/g')
           echo "COMMITS=$COMMITS" >> $GITHUB_ENV
 
       - name: Create release issue
@@ -88,4 +89,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           COMMITS: ${{ steps.get_commit_list.outputs.commits }}
         run: |
-          gh issue create --title "Release v${{ env.RELEASE_VERSION }}" --body "**Date:** ${{ github.event.created_at}}<br>**Author:** ${{ github.actor }}<br>**Version:** ${{ env.RELEASE_VERSION }}<br>**Commits:** ${{ env.COMMITS }}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}"
+          gh issue create --title "Release v${{ env.RELEASE_VERSION }}" --body "**Date:** ${{ github.event.created_at}}<br>**Author:** ${{ github.actor }}<br>**Version:** ${{ env.RELEASE_VERSION }}<br>**Commits:**<br> ${{ env.COMMITS }}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}"
