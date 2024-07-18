@@ -33,7 +33,8 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "
           sudo docker stop app &&
           sudo docker rm app &&
-          sudo docker run -d --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{ github.event.inputs.version }}_latest"
+          sudo docker run -d --restart unless-stopped --name app -p 3000:3000 cr.yandex/${{ vars.CR_ID }}/app:${{
+          github.event.inputs.version }}_latest"
 
       - name: Remove old Docker image
         run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ vars.SERVER_IP }} "sudo docker image prune -af"
