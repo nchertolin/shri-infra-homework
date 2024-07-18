@@ -76,20 +76,22 @@ jobs:
 
       - name: Create fix tag
         run: |
-          git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env.RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
+          git tag -a v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} -m "fix release ${{ env
+          .RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
           git push origin v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
 
       - name: Get commit list
         id: get_commit_list
         run: |
-          echo "COMMITS=$(git log ${{ env.PREV_TAG }}..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >>
-          $GITHUB_ENV
+          git fetch
+          git branch --set-upstream-to origin/v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }}
+          echo "COMMITS=$(git log ${{ env.PREV_TAG }}..v${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} 
+          --pretty=format:"%h - %an, %ar : %s")" >> $GITHUB_ENV
 
       - name: Add comment to issue
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          COMMITS=${{ steps.get_commit_list.outputs.COMMITS }}
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has
           been created.<br><br>**Date:** ${{ github.event.created_at }}<br>**Author:** ${{ github.actor 
