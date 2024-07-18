@@ -82,8 +82,8 @@ jobs:
       - name: Get commit list
         id: get_commit_list
         run: |
-          PREV_TAG=${{ steps.get_prev_tag.outputs.PREV_TAG }}
-          echo "COMMITS=$(git log $PREV_TAG..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >> $GITHUB_ENV
+          echo "COMMITS=$(git log ${{ env.PREV_TAG }}..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >>
+          $GITHUB_ENV
 
       - name: Add comment to issue
         env:
@@ -93,6 +93,6 @@ jobs:
           ISSUE_NUMBER=$(gh issue list --label release --limit 1 --json number --jq ".[0].number")
           gh issue comment $ISSUE_NUMBER --body "Fix Release ${{ env.RELEASE_VERSION }}_fix${{ env.FIX_VERSION }} has
           been created.<br><br>**Date:** ${{ github.event.created_at }}<br>**Author:** ${{ github.actor 
-          }}<br>**Commits:**<br>$COMMITS<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
+          }}<br>**Commits:**<br>${{ env.COMMITS }}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
           .RELEASE_VERSION}}_fix${{ env.FIX_VERSION }}"
       

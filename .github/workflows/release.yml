@@ -79,14 +79,13 @@ jobs:
       - name: Get commit list
         id: get_commit_list
         run: |
-          PREV_TAG=${{ steps.get_prev_tag.outputs.PREV_TAG }}
-          echo "COMMITS=$(git log $PREV_TAG..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >> $GITHUB_ENV
+          echo "COMMITS=$(git log ${{ env.PREV_TAG }}..v${{ env.RELEASE_VERSION }} --pretty=format:"%h - %an, %ar : %s")" >> $GITHUB_ENV
 
       - name: Create release issue
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          COMMITS=${{ steps.get_commit_list.outputs.COMMITS }}
           gh issue create --title "Release v${{ env.RELEASE_VERSION }}" --body "**Date:** ${{ github.event
           .created_at}}<br>**Author:** ${{ github.actor }}<br>**Version:** ${{ env.RELEASE_VERSION 
-          }}<br>**Commits:**<br>$COMMITS<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env.RELEASE_VERSION }}"
+          }}<br>**Commits:**<br>${{ env.COMMITS }}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
+          .RELEASE_VERSION }}"
