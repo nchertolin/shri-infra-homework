@@ -66,6 +66,7 @@ jobs:
         run: |
           git config --global user.email "nchertolin@gmail.com"
           git config --global user.name "nchertolin"
+          gh auth login --with-token ${{ secrets.GH_TOKEN }}
 
       - name: Get previous release tag
         id: get_prev_tag
