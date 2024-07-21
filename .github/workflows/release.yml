@@ -91,3 +91,10 @@ jobs:
           .created_at}}<br>**Author:** ${{ github.actor }}<br>**Version:** ${{ env.RELEASE_VERSION 
           }}<br>**Commits:**<br>${{ env.COMMITS }}<br>**Docker Image:** cr.yandex/${{ vars.CR_ID }}/app:${{ env
           .RELEASE_VERSION }}"
+
+      - name: Update CHANGELOG.md
+        run: |
+          echo -e "## v${{ env.RELEASE_VERSION }}\n${{ env.COMMITS }}\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG.md for release v${{ env.RELEASE_VERSION }}"
+          git push origin releases/${{ env.RELEASE_VERSION }}
