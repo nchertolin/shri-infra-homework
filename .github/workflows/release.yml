@@ -94,6 +94,7 @@ jobs:
 
       - name: Update CHANGELOG.md
         run: |
+          git checkout -b main
           echo -e "## v${{ env.RELEASE_VERSION }}\n${{ env.COMMITS }}\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md for release v${{ env.RELEASE_VERSION }}"
